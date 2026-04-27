@@ -21,6 +21,6 @@ export type Contract = {
 };
 
 export type FetcherData = {
-  fetched_at: string;
+  fetched_at: string | null;
   contracts: Contract[];
 };

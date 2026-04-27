@@ -2,14 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { Contract, FetcherData } from "@/lib/types";
+import {
+  fetchTodayContracts,
+  loadStaticData,
+  loadTickerMap,
+  applyTickerMap,
+} from "@/lib/usaSpending";
 import KPICards from "@/components/KPICards";
 import Charts from "@/components/Charts";
 import ContractTable from "@/components/ContractTable";
 import RevolutCards from "@/components/RevolutCards";
 import { RefreshCw, Star, Table, BarChart2, AlertCircle } from "lucide-react";
 
-type Tab = "revolut" | "all" | "charts";
+type Tab    = "revolut" | "all" | "charts";
 type Status = "idle" | "fetching" | "loading" | "error";
+
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export default function Home() {
   const [data, setData]         = useState<FetcherData | null>(null);
@@ -17,38 +25,38 @@ export default function Home() {
   const [statusMsg, setStatusMsg] = useState("");
   const [tab, setTab]           = useState<Tab>("revolut");
 
-  async function loadData() {
-    const res  = await fetch("/api/contracts");
-    const json: FetcherData = await res.json();
-    setData(json);
+  async function loadFromStatic() {
+    const [fetched, tickerMap] = await Promise.all([
+      loadStaticData(BASE_PATH),
+      loadTickerMap(BASE_PATH),
+    ]);
+    fetched.contracts = applyTickerMap(fetched.contracts, tickerMap);
+    setData(fetched);
   }
 
   async function handleRefresh() {
     setStatus("fetching");
-    setStatusMsg("A correr o fetcher — pode demorar 1-2 min...");
+    setStatusMsg("A pesquisar na USASpending.gov...");
 
     try {
-      const res = await fetch("/api/fetch", { method: "POST" });
-      const json = await res.json();
+      const tickerMap = await loadTickerMap(BASE_PATH);
+      const contracts = await fetchTodayContracts();
+      const enriched  = applyTickerMap(contracts, tickerMap);
 
-      if (!json.ok) {
-        setStatus("error");
-        setStatusMsg("Erro no fetcher. Verifica o fetcher.log.");
-        return;
-      }
-
-      setStatusMsg("Fetcher concluído. A carregar dados...");
-      await loadData();
+      setData({
+        fetched_at: new Date().toISOString(),
+        contracts:  enriched,
+      });
       setStatus("idle");
       setStatusMsg("");
-    } catch {
+    } catch (err) {
       setStatus("error");
-      setStatusMsg("Erro de rede ao tentar correr o fetcher.");
+      setStatusMsg(`Erro: ${err instanceof Error ? err.message : "falha na API"}`);
     }
   }
 
   useEffect(() => {
-    loadData().then(() => setStatus("idle"));
+    loadFromStatic().then(() => setStatus("idle"));
   }, []);
 
   const contracts: Contract[] = data?.contracts ?? [];
@@ -56,13 +64,13 @@ export default function Home() {
     ? new Date(data.fetched_at).toLocaleString("pt-PT")
     : null;
 
+  const isBusy = status === "fetching" || status === "loading";
+
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: "revolut", label: "Revolut",  icon: <Star size={14} /> },
     { id: "charts",  label: "Gráficos", icon: <BarChart2 size={14} /> },
     { id: "all",     label: "Todos",    icon: <Table size={14} /> },
   ];
-
-  const isBusy = status === "fetching" || status === "loading";
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
@@ -96,7 +104,7 @@ export default function Home() {
         </div>
 
         {/* Status bar */}
-        {(statusMsg || status === "error") && (
+        {statusMsg && (
           <div className={`px-6 py-2 text-xs flex items-center gap-2 ${
             status === "error"
               ? "bg-red-950/60 text-red-400 border-t border-red-900"
@@ -124,7 +132,9 @@ export default function Home() {
             <div>
               <p className="text-zinc-400 font-medium">Sem dados para hoje</p>
               <p className="text-zinc-600 text-sm mt-1">
-                Clica em <strong className="text-zinc-400">Atualizar</strong> para correr o fetcher agora.
+                Clica em <strong className="text-zinc-400">Atualizar</strong> para pesquisar agora.
+                <br />
+                Os dados são automaticamente atualizados a cada 8 horas via GitHub Actions.
               </p>
             </div>
           </div>
@@ -132,7 +142,6 @@ export default function Home() {
           <>
             <KPICards contracts={contracts} />
 
-            {/* Tabs */}
             <div className="flex gap-1 bg-zinc-900 border border-zinc-800 rounded-xl p-1 w-fit">
               {tabs.map(({ id, label, icon }) => (
                 <button
