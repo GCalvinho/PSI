@@ -15,7 +15,11 @@
       "Bash(pip3 install:*)",
       "Bash(python3 -c \"import streamlit, pandas, requests, plotly; print\\('All imports OK'\\)\")",
       "Bash(python3 fetcher.py)",
-      "Bash(python3 -c ':*)"
+      "Bash(python3 -c ':*)",
+      "Bash(npm --version)",
+      "Bash(npx create-next-app@latest frontend --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
