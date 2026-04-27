@@ -1,6 +1,6 @@
 "use client";
 
-import { Contract } from "@/lib/mockData";
+import { Contract } from "@/lib/types";
 import { TrendingUp, Building2, DollarSign, Star } from "lucide-react";
 
 function fmt(val: number) {

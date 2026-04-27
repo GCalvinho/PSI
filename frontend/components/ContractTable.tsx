@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Contract } from "@/lib/mockData";
+import { Contract } from "@/lib/types";
 import { Search, TrendingUp } from "lucide-react";
 
 function fmt(val: number) {
