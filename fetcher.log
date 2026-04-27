@@ -1,0 +1,11 @@
+2026-04-27 23:11:39,860 [INFO] ============================================================
+2026-04-27 23:11:39,860 [INFO] PSI Fetcher iniciado
+2026-04-27 23:11:39,861 [INFO] ============================================================
+2026-04-27 23:11:39,861 [INFO] A pesquisar contratos para 2026-04-27 >= $25M...
+2026-04-27 23:11:40,826 [INFO]   Página 1: 0 contratos
+2026-04-27 23:11:40,826 [INFO] Total contratos encontrados: 0
+2026-04-27 23:11:40,829 [INFO] Nenhum contrato encontrado para hoje.
+2026-04-27 23:11:40,830 [INFO] Resultados guardados em: /Users/goncalooliveira/Documents/Projectos/Predictive Stocks Investment/data/contracts_2026-04-27_23.json
+2026-04-27 23:16:45,505 [INFO]   [1/3] Lookup: T-REX SOLUTIONS LLC
+2026-04-27 23:16:46,082 [INFO]   [2/3] Lookup: CLASSIC AIR CHARTER INC.
+2026-04-27 23:16:46,640 [INFO]   [3/3] Lookup: VENTECH SOLUTIONS INC

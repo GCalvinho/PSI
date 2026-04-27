@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git --version)",
+      "Bash(brew install:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)",
+      "WebFetch(domain:api.usaspending.gov)",
+      "WebFetch(domain:usaspending.gov)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:fedspendingtransparency.github.io)",
+      "Bash(pip3 --version)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -c \"import streamlit, pandas, requests, plotly; print\\('All imports OK'\\)\")",
+      "Bash(python3 fetcher.py)",
+      "Bash(python3 -c ':*)"
+    ]
+  }
+}
