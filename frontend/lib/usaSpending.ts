@@ -15,19 +15,23 @@ const FIELDS = [
   "Type of Set Aside",
 ];
 
-export async function fetchTodayContracts(minAmount = 25_000_000): Promise<Contract[]> {
+export async function fetchTodayContracts(
+  minAmount = 25_000_000,
+  setAsideCodes: string[] | null = SMB_SET_ASIDE_CODES
+): Promise<Contract[]> {
   const today = new Date().toISOString().split("T")[0];
   const all: Contract[] = [];
   let page = 1;
 
   while (true) {
-    const payload = {
-      filters: {
-        award_type_codes: ["A", "B", "C", "D"],
-        set_aside_type_codes: SMB_SET_ASIDE_CODES,
-        award_amounts: [{ lower_bound: minAmount }],
-        time_period: [{ start_date: today, end_date: today }],
-      },
+    const filters: Record<string, unknown> = {
+      award_type_codes: ["A", "B", "C", "D"],
+      award_amounts: [{ lower_bound: minAmount }],
+      time_period: [{ start_date: today, end_date: today }],
+    };
+    if (setAsideCodes) filters.set_aside_type_codes = setAsideCodes;
+
+    const payload = { filters,
       fields: FIELDS,
       limit: 100,
       page,
